@@ -8,14 +8,16 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
-namespace App {
+namespace App
+{
 
-class Application {
+class Application
+{
 public:
-	Application();
-	virtual ~Application();
+  Application();
+  virtual ~Application();
 
-	void taskMain();
+  void taskMain();
 };
 
 } /* namespace App */

@@ -1,0 +1,2 @@
+Artistic Style Version 3.1
+https://sourceforge.net/projects/astyle/files/astyle/

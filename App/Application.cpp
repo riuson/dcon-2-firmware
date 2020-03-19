@@ -8,18 +8,22 @@
 #include "Application.h"
 #include "cmsis_os.h"
 
-namespace App {
+namespace App
+{
 
-Application::Application() {
+Application::Application()
+{
 }
 
-Application::~Application() {
+Application::~Application()
+{
 }
 
-void Application::taskMain() {
-	while (true) {
+void Application::taskMain()
+{
+  while (true) {
     osDelay(1);
-	}
+  }
 }
 
 } /* namespace App */
