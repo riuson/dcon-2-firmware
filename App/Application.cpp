@@ -5,7 +5,7 @@
  *      Author: Vladimir
  */
 
-#include "Application.h"
+#include "application.h"
 #include "cmsis_os.h"
 
 namespace App
@@ -15,7 +15,7 @@ Application::Application()
 {
 }
 
-Application::~Application()
+void Application::initialize()
 {
 }
 

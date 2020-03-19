@@ -15,7 +15,9 @@ class Application
 {
 public:
   Application();
-  virtual ~Application();
+  virtual ~Application() {}
+
+  void initialize();
 
   void taskMain();
 };

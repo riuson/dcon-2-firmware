@@ -5,8 +5,8 @@
  *      Author: Vladimir
  */
 
+#include "application.h"
 #include "app_imports.h"
-#include "Application.h"
 
 static App::Application application;
 
