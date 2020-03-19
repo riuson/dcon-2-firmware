@@ -10,7 +10,8 @@
 namespace App::Drivers::Rtc
 {
 
-Rtc::Rtc(RTC_TypeDef *rtc)
+Rtc::Rtc(RTC_HandleTypeDef *hrtc) :
+  _hrtc(hrtc)
 {
 }
 

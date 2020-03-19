@@ -16,10 +16,13 @@ namespace App::Drivers::Rtc
 class Rtc
 {
 public:
-  Rtc(RTC_TypeDef *rtc);
+  Rtc(RTC_HandleTypeDef *hrtc);
   virtual ~Rtc() {}
 
   void initialize();
+
+private:
+  RTC_HandleTypeDef *_hrtc;
 };
 
 } /* namespace App::Drivers::Rtc */

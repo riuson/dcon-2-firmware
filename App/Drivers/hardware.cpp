@@ -6,12 +6,13 @@
  */
 
 #include "hardware.h"
+#include <rtc.h>
 
 namespace App::Drivers
 {
 
 Hardware::Hardware() :
-  _rtc(nullptr)
+  _rtc(&hrtc)
 {
 }
 
