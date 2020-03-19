@@ -17,6 +17,7 @@ Application::Application()
 
 void Application::initialize()
 {
+  this->_hardware.initialize();
 }
 
 void Application::taskMain()

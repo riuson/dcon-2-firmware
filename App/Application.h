@@ -8,6 +8,8 @@
 #ifndef APPLICATION_H_
 #define APPLICATION_H_
 
+#include "Drivers/hardware.h"
+
 namespace App
 {
 
@@ -20,6 +22,9 @@ public:
   void initialize();
 
   void taskMain();
+
+private:
+  Drivers::Hardware _hardware;
 };
 
 } /* namespace App */
