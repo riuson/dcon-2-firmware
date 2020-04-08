@@ -98,20 +98,20 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
     0x15, 0x00,                // LOGICAL_MINIMUM (0)
     0x26, 0xff, 0x00,          // LOGICAL_MAXIMUM (255)
 
-	0x75, 0x08,                // REPORT_SIZE (8)
+    0x75, 0x08,                // REPORT_SIZE (8)
 
-	0x85, 0x01,                // Report Id 1
-	0x95, 0x3f,                // REPORT_COUNT (63)
+    0x85, 0x01,                // Report Id 1
+    0x95, 0x3f,                // REPORT_COUNT (63)
     0x09, 0x01,                // USAGE (Undefined)
     0x81, 0x02,                // INPUT (Data, Var, Abs)
 
-	0x85, 0x01,                // Report Id 1
-	0x95, 0x3f,                // REPORT_COUNT (63)
+    0x85, 0x01,                // Report Id 1
+    0x95, 0x3f,                // REPORT_COUNT (63)
     0x09, 0x02,                // USAGE (Undefined)
     0x91, 0x02,                // OUTPUT (Data, Var, Abs)
 
-	0x85, 0x02,                // Report Id 2
-	0x95, 0x3f,                // REPORT_COUNT (63)
+    0x85, 0x01,                // Report Id 1
+    0x95, 0x3f,                // REPORT_COUNT (63)
     0x09, 0x03,                // USAGE (Undefined)
     0xb1, 0x02,                // FEATURE (Data, Var, Abs)
   /* USER CODE END 0 */
@@ -147,8 +147,10 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 static int8_t CUSTOM_HID_Init_FS(void);
 static int8_t CUSTOM_HID_DeInit_FS(void);
 static int8_t CUSTOM_HID_OutEvent_FS(uint8_t *buffer);
-static int8_t CustomHID_SetFeature (uint8_t event_idx, uint8_t* buffer);
-static int8_t CustomHID_GetFeature (uint8_t event_idx, uint8_t* buffer, uint16_t* length);
+static int8_t CustomHID_GetReportInput  (uint8_t event_idx, uint8_t* buffer, uint16_t* length);
+static int8_t CustomHID_GetReportFeature(uint8_t event_idx, uint8_t* buffer, uint16_t* length);
+static int8_t CustomHID_SetReportOutput (uint8_t event_idx, uint8_t* buffer);
+static int8_t CustomHID_SetReportFeature(uint8_t event_idx, uint8_t* buffer);
 
 /**
   * @}
@@ -159,7 +161,11 @@ USBD_CUSTOM_HID_ItfTypeDef USBD_CustomHID_fops_FS =
   CUSTOM_HID_ReportDesc_FS,
   CUSTOM_HID_Init_FS,
   CUSTOM_HID_DeInit_FS,
-  CUSTOM_HID_OutEvent_FS
+  CUSTOM_HID_OutEvent_FS,
+  CustomHID_GetReportInput,
+  CustomHID_GetReportFeature,
+  CustomHID_SetReportOutput,
+  CustomHID_SetReportFeature
 };
 
 /** @defgroup USBD_CUSTOM_HID_Private_Functions USBD_CUSTOM_HID_Private_Functions
@@ -207,6 +213,74 @@ static int8_t CUSTOM_HID_OutEvent_FS(uint8_t *_buffer)
 }
 
 /* USER CODE BEGIN 7 */
+static int8_t CustomHID_GetReportInput(uint8_t event_idx, uint8_t* buffer, uint16_t* length)
+{
+  // as ReportID must reside inside the [0] byte
+
+  switch(event_idx) {
+    case 1: {
+      *length = 5;
+      buffer[0] = event_idx;
+      buffer[1] = 1;
+      buffer[2] = 2;
+      buffer[3] = 3;
+      buffer[4] = 4;
+      return USBD_OK;
+    }
+
+    default: /* Report does not exist */
+      return (USBD_FAIL);
+  }
+}
+
+static int8_t CustomHID_GetReportFeature(uint8_t event_idx, uint8_t* buffer, uint16_t* length)
+{
+  // as ReportID must reside inside the [0] byte
+
+  switch(event_idx) {
+    case 1: {
+      *length = 5;
+      buffer[0] = event_idx;
+      buffer[1] = 1;
+      buffer[2] = 2;
+      buffer[3] = 3;
+      buffer[4] = 4;
+      return USBD_OK;
+    }
+
+    default: /* Report does not exist */
+      return (USBD_FAIL);
+  }
+}
+
+static int8_t CustomHID_SetReportOutput(uint8_t event_idx, uint8_t* buffer)
+{
+  switch(event_idx) {
+    case 1: {
+      return USBD_OK;
+    }
+
+    default: /* Report does not exist */
+      return USBD_FAIL;
+   }
+
+   //return (USBD_OK);
+}
+
+static int8_t CustomHID_SetReportFeature(uint8_t event_idx, uint8_t* buffer)
+{
+  switch(event_idx) {
+    case 1: {
+      return USBD_OK;
+    }
+
+    default: /* Report does not exist */
+      return USBD_FAIL;
+   }
+
+   //return (USBD_OK);
+}
+
 /**
   * @brief  Send the report to the Host
   * @param  report: The report to be sent

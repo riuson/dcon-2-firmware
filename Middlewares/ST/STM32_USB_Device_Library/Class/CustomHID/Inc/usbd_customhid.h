@@ -68,14 +68,14 @@ extern "C" {
 #define CUSTOM_HID_DESCRIPTOR_TYPE           0x21U
 #define CUSTOM_HID_REPORT_DESC               0x22U
 
-#define CUSTOM_HID_REQ_SET_PROTOCOL          0x0BU
-#define CUSTOM_HID_REQ_GET_PROTOCOL          0x03U
-
-#define CUSTOM_HID_REQ_SET_IDLE              0x0AU
-#define CUSTOM_HID_REQ_GET_IDLE              0x02U
-
-#define CUSTOM_HID_REQ_SET_REPORT            0x09U
+// HID-class specific requests
 #define CUSTOM_HID_REQ_GET_REPORT            0x01U
+#define CUSTOM_HID_REQ_GET_IDLE              0x02U
+#define CUSTOM_HID_REQ_GET_PROTOCOL          0x03U
+#define CUSTOM_HID_REQ_SET_REPORT            0x09U
+#define CUSTOM_HID_REQ_SET_IDLE              0x0AU
+#define CUSTOM_HID_REQ_SET_PROTOCOL          0x0BU
+
 /**
   * @}
   */
@@ -97,6 +97,10 @@ typedef struct _USBD_CUSTOM_HID_Itf
   int8_t (* Init)(void);
   int8_t (* DeInit)(void);
   int8_t (* OutEvent)(uint8_t *buffer);
+  int8_t (* GetReportInput)   (uint8_t, uint8_t*, uint16_t*);
+  int8_t (* GetReportFeature) (uint8_t, uint8_t*, uint16_t*);
+  int8_t (* SetReportOutput)  (uint8_t, uint8_t*);
+  int8_t (* SetReportFeature) (uint8_t, uint8_t*);
 
 } USBD_CUSTOM_HID_ItfTypeDef;
 

@@ -436,6 +436,8 @@ static uint8_t  USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
   uint8_t  *pbuf = NULL;
   uint16_t status_info = 0U;
   uint8_t ret = USBD_OK;
+  USBD_StatusTypeDef state;
+  uint8_t buffer[USBD_CUSTOMHID_INREPORT_BUF_SIZE];
 
   switch (req->bmRequest & USB_REQ_TYPE_MASK)
   {
@@ -461,6 +463,34 @@ static uint8_t  USBD_CUSTOM_HID_Setup(USBD_HandleTypeDef *pdev,
         case CUSTOM_HID_REQ_SET_REPORT:
           hhid->IsReportAvailable = 1U;
           USBD_CtlPrepareRx(pdev, hhid->Report_buf, req->wLength);
+          break;
+
+        case CUSTOM_HID_REQ_GET_REPORT:
+          if ((req->wValue & 0xff00u) == 0x0100u) {
+            state = ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->GetReportInput(
+              req->wValue & 0xff,
+              buffer,
+              &len);
+          } else if ((req->wValue & 0xff00u) == 0x0300u) {
+            state = ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->GetReportFeature(
+              req->wValue & 0xff,
+              buffer,
+              &len);
+          } else {
+            state == USBD_FAIL;
+          }
+
+          if( state == USBD_OK )
+          {
+             USBD_CtlSendData (pdev,
+                               buffer,
+                               len);
+          }
+          else
+          {
+             USBD_CtlError (pdev, req);
+             return USBD_FAIL;
+          }
           break;
 
         default:
@@ -656,14 +686,21 @@ static uint8_t  USBD_CUSTOM_HID_DataOut(USBD_HandleTypeDef *pdev,
 static uint8_t USBD_CUSTOM_HID_EP0_RxReady(USBD_HandleTypeDef *pdev)
 {
   USBD_CUSTOM_HID_HandleTypeDef     *hhid = (USBD_CUSTOM_HID_HandleTypeDef *)pdev->pClassData;
+  uint8_t state = USBD_OK;
 
   if (hhid->IsReportAvailable == 1U)
   {
-    ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->OutEvent(hhid->Report_buf);
+    if ((pdev->request.wValue & 0xff00u) == 0x0200u) {
+      ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->SetReportOutput(hhid->Report_buf[0], &hhid->Report_buf[1]);
+    } else if ((pdev->request.wValue & 0xff00u) == 0x0300u) {
+      ((USBD_CUSTOM_HID_ItfTypeDef *)pdev->pUserData)->SetReportFeature(hhid->Report_buf[0], &hhid->Report_buf[1]);
+    } else {
+      state = USBD_FAIL;
+    }
     hhid->IsReportAvailable = 0U;
   }
 
-  return USBD_OK;
+  return state;
 }
 
 /**
