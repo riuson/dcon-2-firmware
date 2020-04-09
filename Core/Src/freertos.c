@@ -27,10 +27,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
 #include "app_imports.h"
+#include "hid_report.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticQueue_t osStaticMessageQDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -73,6 +75,28 @@ const osThreadAttr_t taskExchange_attributes = {
   .cb_size = sizeof(taskExchangeControlBlock),
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for usbRxQueue */
+osMessageQueueId_t usbRxQueueHandle;
+uint8_t usbRxQueueBuffer[ 2 * sizeof( HidReport_t ) ];
+osStaticMessageQDef_t usbRxQueueControlBlock;
+const osMessageQueueAttr_t usbRxQueue_attributes = {
+  .name = "usbRxQueue",
+  .cb_mem = &usbRxQueueControlBlock,
+  .cb_size = sizeof(usbRxQueueControlBlock),
+  .mq_mem = &usbRxQueueBuffer,
+  .mq_size = sizeof(usbRxQueueBuffer)
+};
+/* Definitions for usbTxQueue */
+osMessageQueueId_t usbTxQueueHandle;
+uint8_t usbTxQueueBuffer[ 2 * sizeof( HidReport_t ) ];
+osStaticMessageQDef_t usbTxQueueControlBlock;
+const osMessageQueueAttr_t usbTxQueue_attributes = {
+  .name = "usbTxQueue",
+  .cb_mem = &usbTxQueueControlBlock,
+  .cb_size = sizeof(usbTxQueueControlBlock),
+  .mq_mem = &usbTxQueueBuffer,
+  .mq_size = sizeof(usbTxQueueBuffer)
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -106,6 +130,13 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of usbRxQueue */
+  usbRxQueueHandle = osMessageQueueNew (2, sizeof(HidReport_t), &usbRxQueue_attributes);
+
+  /* creation of usbTxQueue */
+  usbTxQueueHandle = osMessageQueueNew (2, sizeof(HidReport_t), &usbTxQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
