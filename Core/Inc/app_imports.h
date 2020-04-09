@@ -12,7 +12,13 @@
 extern "C" {
 #endif
 
+void appPreInit(void);
 void appTaskMain(void);
+
+extern uint8_t usb_rx_buffer[64];
+extern uint8_t usb_rx_not_empty;
+extern uint8_t usb_tx_buffer[64];
+extern uint8_t usb_tx_ready;
 
 #ifdef __cplusplus
 }
