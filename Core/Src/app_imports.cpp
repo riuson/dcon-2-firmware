@@ -28,3 +28,8 @@ void appTaskMain(void)
 {
   application.taskMain();
 }
+
+void appTaskExchange(void)
+{
+  application.taskExchange();
+}

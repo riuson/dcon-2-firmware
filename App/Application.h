@@ -22,6 +22,7 @@ public:
   void initialize();
 
   void taskMain();
+  void taskExchange();
 
 private:
   Drivers::Hardware _hardware;

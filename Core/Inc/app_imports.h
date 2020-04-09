@@ -14,6 +14,7 @@ extern "C" {
 
 void appPreInit(void);
 void appTaskMain(void);
+void appTaskExchange(void);
 
 extern uint8_t usb_rx_buffer[64];
 extern uint8_t usb_rx_not_empty;

@@ -1,6 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
-FREERTOS.IPParameters=Tasks01
-FREERTOS.Tasks01=defaultTask,24,128,StartDefaultTask,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.FootprintOK=true
+FREERTOS.IPParameters=Tasks01,FootprintOK
+FREERTOS.Tasks01=mainTask,24,256,StartMainTask,Default,NULL,Static,mainTaskBuffer,mainTaskControlBlock;taskExchange,8,256,StartTaskExchange,Default,NULL,Static,taskExchangeBuffer,taskExchangeControlBlock
 File.Version=6
 KeepUserPlacement=false
 Mcu.Family=STM32L4

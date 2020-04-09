@@ -27,4 +27,11 @@ void Application::taskMain()
   }
 }
 
+void Application::taskExchange()
+{
+  while (true) {
+    osDelay(100);
+  }
+}
+
 } /* namespace App */
