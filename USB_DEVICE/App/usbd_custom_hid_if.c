@@ -113,7 +113,7 @@ __ALIGN_BEGIN static uint8_t CUSTOM_HID_ReportDesc_FS[USBD_CUSTOM_HID_REPORT_DES
     0x09, 0x02,                // USAGE (Undefined)
     0x91, 0x02,                // OUTPUT (Data, Var, Abs)
 
-    0x85, 0x01,                // Report Id 1
+    0x85, 0x02,                // Report Id 2
     0x95, 0x3f,                // REPORT_COUNT (63)
     0x09, 0x03,                // USAGE (Undefined)
     0xb1, 0x02,                // FEATURE (Data, Var, Abs)
@@ -222,12 +222,12 @@ static int8_t CustomHID_GetReportInput(uint8_t event_idx, uint8_t* buffer, uint1
 
   switch(event_idx) {
     case 1: {
-      *length = 5;
-      buffer[0] = event_idx;
-      buffer[1] = 1;
-      buffer[2] = 2;
-      buffer[3] = 3;
-      buffer[4] = 4;
+      if (osMessageQueueGet(usbTxQueueHandle, &tx_report, 0, 0) != osOK) {
+        return (USBD_BUSY);
+      }
+
+      memcpy(buffer, &tx_report, USBD_CUSTOMHID_INREPORT_BUF_SIZE);
+      *length = 64;
       return USBD_OK;
     }
 
