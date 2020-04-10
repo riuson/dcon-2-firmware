@@ -116,7 +116,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-  appPreInit();
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -139,6 +139,7 @@ void MX_FREERTOS_Init(void) {
   usbTxQueueHandle = osMessageQueueNew (2, sizeof(HidReport_t), &usbTxQueue_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
+  appPreInit();
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
