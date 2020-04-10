@@ -129,3 +129,4 @@ App/Data/version.h
 # Auto-generated resource files
 /App/Resources/Images/Output/
 /App/Resources/Fonts/Output/
+/App/Resources/revision.h

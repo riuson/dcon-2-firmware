@@ -9,7 +9,7 @@
 #define APPLICATION_H_
 
 #include "Drivers/hardware.h"
-#include "hid_report.h"
+#include "Exchange/protocol_handler.h"
 
 namespace App
 {
@@ -27,8 +27,7 @@ public:
 
 private:
   Drivers::Hardware _hardware;
-  HidReport_t _rxReport;
-  HidReport_t _txReport;
+  Exchange::ProtocolHandler _protocol;
 };
 
 } /* namespace App */
