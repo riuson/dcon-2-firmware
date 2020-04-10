@@ -27,9 +27,12 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */     
 #include "app_imports.h"
+#include "hid_report.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
+typedef StaticTask_t osStaticThreadDef_t;
+typedef StaticQueue_t osStaticMessageQDef_t;
 /* USER CODE BEGIN PTD */
 
 /* USER CODE END PTD */
@@ -48,12 +51,51 @@
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
-/* Definitions for defaultTask */
-osThreadId_t defaultTaskHandle;
-const osThreadAttr_t defaultTask_attributes = {
-  .name = "defaultTask",
+/* Definitions for mainTask */
+osThreadId_t mainTaskHandle;
+uint32_t mainTaskBuffer[ 256 ];
+osStaticThreadDef_t mainTaskControlBlock;
+const osThreadAttr_t mainTask_attributes = {
+  .name = "mainTask",
+  .stack_mem = &mainTaskBuffer[0],
+  .stack_size = sizeof(mainTaskBuffer),
+  .cb_mem = &mainTaskControlBlock,
+  .cb_size = sizeof(mainTaskControlBlock),
   .priority = (osPriority_t) osPriorityNormal,
-  .stack_size = 128 * 4
+};
+/* Definitions for taskExchange */
+osThreadId_t taskExchangeHandle;
+uint32_t taskExchangeBuffer[ 256 ];
+osStaticThreadDef_t taskExchangeControlBlock;
+const osThreadAttr_t taskExchange_attributes = {
+  .name = "taskExchange",
+  .stack_mem = &taskExchangeBuffer[0],
+  .stack_size = sizeof(taskExchangeBuffer),
+  .cb_mem = &taskExchangeControlBlock,
+  .cb_size = sizeof(taskExchangeControlBlock),
+  .priority = (osPriority_t) osPriorityLow,
+};
+/* Definitions for usbRxQueue */
+osMessageQueueId_t usbRxQueueHandle;
+uint8_t usbRxQueueBuffer[ 2 * sizeof( HidReport_t ) ];
+osStaticMessageQDef_t usbRxQueueControlBlock;
+const osMessageQueueAttr_t usbRxQueue_attributes = {
+  .name = "usbRxQueue",
+  .cb_mem = &usbRxQueueControlBlock,
+  .cb_size = sizeof(usbRxQueueControlBlock),
+  .mq_mem = &usbRxQueueBuffer,
+  .mq_size = sizeof(usbRxQueueBuffer)
+};
+/* Definitions for usbTxQueue */
+osMessageQueueId_t usbTxQueueHandle;
+uint8_t usbTxQueueBuffer[ 2 * sizeof( HidReport_t ) ];
+osStaticMessageQDef_t usbTxQueueControlBlock;
+const osMessageQueueAttr_t usbTxQueue_attributes = {
+  .name = "usbTxQueue",
+  .cb_mem = &usbTxQueueControlBlock,
+  .cb_size = sizeof(usbTxQueueControlBlock),
+  .mq_mem = &usbTxQueueBuffer,
+  .mq_size = sizeof(usbTxQueueBuffer)
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,7 +103,8 @@ const osThreadAttr_t defaultTask_attributes = {
    
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void *argument);
+void StartMainTask(void *argument);
+void StartTaskExchange(void *argument);
 
 extern void MX_USB_DEVICE_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -73,7 +116,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-       
+
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -88,13 +131,24 @@ void MX_FREERTOS_Init(void) {
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
 
+  /* Create the queue(s) */
+  /* creation of usbRxQueue */
+  usbRxQueueHandle = osMessageQueueNew (2, sizeof(HidReport_t), &usbRxQueue_attributes);
+
+  /* creation of usbTxQueue */
+  usbTxQueueHandle = osMessageQueueNew (2, sizeof(HidReport_t), &usbTxQueue_attributes);
+
   /* USER CODE BEGIN RTOS_QUEUES */
+  appPreInit();
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
-  /* creation of defaultTask */
-  defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
+  /* creation of mainTask */
+  mainTaskHandle = osThreadNew(StartMainTask, NULL, &mainTask_attributes);
+
+  /* creation of taskExchange */
+  taskExchangeHandle = osThreadNew(StartTaskExchange, NULL, &taskExchange_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -102,20 +156,34 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
+/* USER CODE BEGIN Header_StartMainTask */
 /**
-  * @brief  Function implementing the defaultTask thread.
+  * @brief  Function implementing the mainTask thread.
   * @param  argument: Not used 
   * @retval None
   */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void *argument)
+/* USER CODE END Header_StartMainTask */
+void StartMainTask(void *argument)
 {
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN StartMainTask */
   appTaskMain();
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END StartMainTask */
+}
+
+/* USER CODE BEGIN Header_StartTaskExchange */
+/**
+* @brief Function implementing the taskExchange thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartTaskExchange */
+void StartTaskExchange(void *argument)
+{
+  /* USER CODE BEGIN StartTaskExchange */
+  appTaskExchange();
+  /* USER CODE END StartTaskExchange */
 }
 
 /* Private application code --------------------------------------------------*/

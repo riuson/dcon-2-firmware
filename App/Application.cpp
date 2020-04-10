@@ -8,10 +8,14 @@
 #include "application.h"
 #include "cmsis_os.h"
 
+extern osMessageQueueId_t usbRxQueueHandle;
+extern osMessageQueueId_t usbTxQueueHandle;
+
 namespace App
 {
 
-Application::Application()
+Application::Application() :
+  _protocol(usbRxQueueHandle, usbTxQueueHandle)
 {
 }
 
@@ -25,6 +29,11 @@ void Application::taskMain()
   while (true) {
     osDelay(1);
   }
+}
+
+void Application::taskExchange()
+{
+  this->_protocol.handle();
 }
 
 } /* namespace App */

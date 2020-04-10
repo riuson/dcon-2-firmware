@@ -9,6 +9,7 @@
 #define APPLICATION_H_
 
 #include "Drivers/hardware.h"
+#include "Exchange/protocol_handler.h"
 
 namespace App
 {
@@ -22,9 +23,11 @@ public:
   void initialize();
 
   void taskMain();
+  void taskExchange();
 
 private:
   Drivers::Hardware _hardware;
+  Exchange::ProtocolHandler _protocol;
 };
 
 } /* namespace App */
